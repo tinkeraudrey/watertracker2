@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Water Use</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+ :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:dark;
+  --bg1:#06121f;--bg2:#0d3355;--card:rgba(255,255,255,.07);--line:rgba(255,255,255,.12);
+  --text:#f2f9ff;--muted:#8fb2cc;--accent:#5ad1ff;--accent2:#7cf0a8;--glow:rgba(90,209,255,.35)}
+ @media (prefers-color-scheme:light){:root:not([data-theme="dark"]){color-scheme:light;
+  --bg1:#e6f4ff;--bg2:#bfe3fb;--card:rgba(255,255,255,.75);--line:rgba(11,42,69,.12);
+  --text:#0b2a45;--muted:#4c6f8a;--accent:#0a86c8;--accent2:#14a35a;--glow:rgba(10,134,200,.25)}}
+ :root[data-theme="dark"]{color-scheme:dark}
+ *{box-sizing:border-box}
+ html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+ body{margin:0;min-height:100%;background:linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;color:var(--text);
+  font-family:"Outfit",system-ui,-apple-system,"Segoe UI",sans-serif}
+ .wrap{max-width:480px;margin:0 auto;padding:18px 16px 28px;display:flex;flex-direction:column;gap:14px}
+ header{display:flex;justify-content:center;align-items:center;font-size:22px;letter-spacing:.12em;
+  color:var(--muted);font-weight:600;text-transform:uppercase}
+ .live{display:flex;align-items:center;gap:7px;color:var(--accent2)}
+ .live i{width:8px;height:8px;border-radius:50%;background:var(--accent2);animation:pulse 1.4s infinite}
+ @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(124,240,168,.6)}100%{box-shadow:0 0 0 10px rgba(124,240,168,0)}}
+ .card{background:var(--card);border:1px solid var(--line);border-radius:24px;backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);overflow:hidden;position:relative}
+ .hero{text-align:center;padding:26px 16px 0}
+ .hero small{font-size:13px;letter-spacing:.16em;color:var(--muted);font-weight:600}
+ .num{font-size:min(21vw,96px);font-weight:800;line-height:1.05;margin:6px 0 2px;font-variant-numeric:tabular-nums;
+  background:linear-gradient(180deg,var(--accent2),var(--accent));-webkit-background-clip:text;background-clip:text;
+  color:transparent;filter:drop-shadow(0 6px 22px var(--glow))}
+ .unit{font-size:15px;color:var(--muted);padding-bottom:6px}
+ .waves{height:46px;margin-top:6px;position:relative}
+ .waves svg{position:absolute;left:0;bottom:0;width:200%;height:100%}
+ .w1{animation:slide 7s linear infinite}.w2{animation:slide 11s linear infinite reverse;opacity:.6}
+ @keyframes slide{to{transform:translateX(-50%)}}
+ .cmp{padding:20px 18px 0;transition:opacity .45s,transform .45s}
+ .cmp.out{opacity:0;transform:translateY(8px)}
+ .cmp-in{display:flex;align-items:center;gap:16px}
+ .ico{flex:0 0 96px;height:96px;border-radius:50%;display:grid;place-items:center;font-size:52px;
+  background:radial-gradient(circle,var(--glow),transparent 70%);border:1px solid var(--line)}
+ .intro{font-size:12px;letter-spacing:.12em;color:var(--muted);font-weight:600}
+ .amt{font-size:min(12vw,56px);font-weight:800;line-height:1.1;color:var(--accent);font-variant-numeric:tabular-nums}
+ .lbl{font-size:14px;font-weight:600;letter-spacing:.04em}
+ .bar{height:4px;background:var(--line);margin-top:20px}
+ .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+ .lb{padding:18px}
+ .lb h2{margin:0 0 12px;font-size:13px;letter-spacing:.16em;color:var(--muted);font-weight:600}
+ .rows{position:relative;height:192px}
+ .row.me{border-color:var(--accent);background:rgba(90,209,255,.13)}
+ .row{position:absolute;left:0;right:0;height:56px;display:flex;align-items:center;gap:12px;padding:0 12px;
+  background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:16px;
+  transition:transform .8s cubic-bezier(.3,1.3,.5,1),opacity .5s}
+ .medal{font-size:24px;width:30px;text-align:center}
+ .fl{flex:1;min-width:0}
+ .fl b{font-size:16px}
+ .track{height:5px;border-radius:3px;background:var(--line);margin-top:6px;overflow:hidden}
+ .track i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .9s}
+ .gal{font-weight:800;font-size:18px;font-variant-numeric:tabular-nums;text-align:right}
+ .gal span{display:block;font-size:10px;color:var(--muted);letter-spacing:.1em;font-weight:600}
+ footer{text-align:center;color:var(--muted);font-size:11px;letter-spacing:.06em}
+</style></head><body>
+<div class="wrap">
+
+ <section class="card">
+  <div class="hero"><small>GALLONS OF WATER USED TODAY</small>
+   <div class="num" id="total">0</div><div class="unit">gallons and counting</div></div>
+  <div class="waves">
+   <svg class="w2" viewBox="0 0 800 46" preserveAspectRatio="none"><path fill="var(--accent)" d="M0 22 Q100 6 200 22 T400 22 T600 22 T800 22 V46 H0Z"/></svg>
+   <svg class="w1" viewBox="0 0 800 46" preserveAspectRatio="none"><path fill="var(--accent)" opacity=".5" d="M0 26 Q100 10 200 26 T400 26 T600 26 T800 26 V46 H0Z"/></svg>
+  </div>
+ </section>
+
+ <section class="card">
+  <div class="cmp" id="cmp"><div class="cmp-in">
+   <div class="ico" id="icon"></div>
+   <div><div class="intro" id="intro"></div><div class="amt" id="amt"></div><div class="lbl" id="lbl"></div></div>
+  </div></div>
+  <div class="bar"><i id="prog"></i></div>
+ </section>
+
+ <section class="card lb"><h2>LEADERBOARD</h2><div class="rows" id="rows"></div></section>
+</div>
+<script>
+const START_GALLONS=1345, GALLONS_PER_SEC=1.5, SWITCH_MS=10000;
+const COMPARISONS=[
+ ["THIS IS EQUIVALENT TO",0.132,"bottles of water!","🧴"],
+ ["THIS IS ENOUGH TO WATER",10,"young trees per day!","🌳"],
+ ["THIS IS ENOUGH WATER FOR",25,"10-minute showers!","🚿"],
+ ["THIS IS ENOUGH TO GROW",112,"pounds of corn!","🌽"],
+ ["THIS IS ENOUGH TO FLUSH",1.6,"toilets, one flush each!","🚽"],
+ ["THIS IS ENOUGH FOR",20,"loads of laundry!","🧺"],
+ ["THIS IS ENOUGH TO FILL",40,"bathtubs to the brim!","🛁"],
+ ["IT TAKES THIS MUCH TO MAKE",660,"quarter-pound burgers!","🍔"],
+ ["IT TAKES THIS MUCH TO MAKE",713,"cotton t-shirts!","👕"],
+ ["IT TAKES THIS MUCH TO BREW",37,"cups of coffee!","☕"]
+];
+const floors={10:1345,4:1290,7:1410};
+const rate={4:1.08,7:0.97};
+const medals=["🥇","🥈","🥉"], H=64;
+let total=START_GALLONS, idx=0, last=performance.now(), cmpStart=last;
+const $=id=>document.getElementById(id), fmt=n=>Math.floor(n).toLocaleString("en-US");
+const gauss=(m,s)=>m+s*Math.sqrt(-2*Math.log(1-Math.random()))*Math.cos(2*Math.PI*Math.random());
+
+// build leaderboard rows once, then move them by rank so swaps animate
+const rowEls={};
+for(const f in floors){
+ const el=document.createElement("div");el.className="row"+(f==10?" me":"");
+ el.innerHTML=`<div class="medal"></div><div class="fl"><b>Floor ${f}</b><div class="track"><i></i></div></div><div class="gal"><b></b><span>GALLONS</span></div>`;
+ $("rows").appendChild(el);rowEls[f]=el;
+}
+function board(){
+ floors[10]=total;Object.entries(floors).sort((a,b)=>a[1]-b[1]).forEach(([f,g],rank)=>{
+  const el=rowEls[f];
+  el.style.transform=`translateY(${rank*H}px)`;
+  el.style.opacity=1;
+  el.querySelector(".medal").textContent=medals[rank]||"";
+  el.querySelector(".gal b").textContent=Math.floor(g);
+  el.querySelector(".track i").style.width=Math.min(100,g/18)+"%";
+ });
+}
+function setCmp(){
+ const [intro,,label,icon]=COMPARISONS[idx];
+ $("intro").textContent=intro;$("lbl").textContent=label;$("icon").textContent=icon;
+}
+function frame(now){
+ const dt=Math.min(0.5,(now-last)/1000);last=now;
+ total+=Math.max(0,gauss(GALLONS_PER_SEC,0.6))*dt;
+ $("total").textContent=fmt(total);
+ $("amt").textContent=fmt(total/COMPARISONS[idx][1]);
+ const p=(now-cmpStart)/SWITCH_MS;
+ $("prog").style.width=Math.min(100,p*100)+"%";
+ if(p>=1){
+  cmpStart=now;idx=(idx+1)%COMPARISONS.length;
+  $("cmp").classList.add("out");
+  setTimeout(()=>{setCmp();$("cmp").classList.remove("out")},450);
+ }
+ requestAnimationFrame(frame);
+}
+setInterval(()=>{for(const f in rate) floors[f]+=Math.max(0,gauss(GALLONS_PER_SEC*rate[f],0.6));board()},1000);
+setCmp();board();requestAnimationFrame(frame);
+</script></body></html>
